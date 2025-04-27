@@ -125,6 +125,7 @@
 
     #admin-controls {
       margin-top: 20px;
+      display: none;
     }
 
     .admin-button {
@@ -313,6 +314,8 @@
       loadQueue();
     } else {
       document.getElementById('error-message').style.display = 'block';
+      document.getElementById('login-section').style.display = 'block';
+      document.getElementById('chat-section').style.display = 'none';
     }
   }
 
