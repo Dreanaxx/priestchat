@@ -93,6 +93,10 @@
       border-radius: 8px;
       max-width: 400px;
       width: 100%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     #login-section input {
@@ -154,6 +158,10 @@
   const validAdmin = { username: "admin", password: "admin" };
   let isAdmin = false;
 
+  // Toon chat altijd voor gebruikers
+  document.getElementById("chat-section").style.display = "block";
+
+  // Functie voor het inloggen van de admin
   function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -161,16 +169,18 @@
     if (username === validAdmin.username && password === validAdmin.password) {
       isAdmin = true;
       showAdminControls();
+      document.getElementById("login-section").style.display = "none";
     } else {
       alert("Foute inloggegevens.");
     }
   }
 
+  // Toon de admin controls na succesvolle login
   function showAdminControls() {
-    document.getElementById("login-section").style.display = "none";
     document.getElementById("admin-controls").classList.add("active");
   }
 
+  // Functie om berichten te versturen
   function sendMessage() {
     const message = document.getElementById("message").value;
     if (message) {
@@ -182,10 +192,12 @@
     }
   }
 
+  // Functie om een gebruiker te kickeren (nog niet geïmplementeerd)
   function kickUser() {
     alert("Gebruiker gekicked!");
   }
 
+  // Functie om de wachtrij te bekijken (nog niet geïmplementeerd)
   function viewQueue() {
     alert("Bekijk wachtrij (Nog niet geïmplementeerd).");
   }
