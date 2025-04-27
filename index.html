@@ -5,112 +5,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Livechat met Priester</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* Algemeen stijlen voor de pagina */
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f0f4f8;
+      font-family: 'Arial', sans-serif;
+      background: #f4f7f6;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
+      margin: 0;
       flex-direction: column;
+      color: #3c3c3c;
     }
 
     h1 {
-      color: #1d3557;
+      font-size: 2.5rem;
+      color: #1a3d58;
       margin-bottom: 20px;
+      text-align: center;
+      font-family: 'Georgia', serif;
     }
 
     .chat-container {
       background: #fff;
+      width: 90%;
+      max-width: 500px;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
+      height: 70vh;
     }
 
     .chat-box {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      max-height: 300px;
+      flex-grow: 1;
       overflow-y: auto;
-      margin-bottom: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
       padding: 10px;
-      background-color: #fafafa;
+      margin-bottom: 20px;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+      font-size: 1rem;
     }
 
     .input-container {
       display: flex;
-      justify-content: space-between;
+      gap: 10px;
     }
 
     .input-container input {
-      width: 80%;
+      flex-grow: 1;
       padding: 10px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
       border-radius: 8px;
-      border: 1px solid #ddd;
+      outline: none;
     }
 
     .input-container button {
-      padding: 10px;
-      background-color: #1d3557;
+      padding: 12px 15px;
+      background: #1d3557;
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      font-size: 1rem;
     }
 
     .input-container button:hover {
-      background-color: #457b9d;
+      background: #457b9d;
     }
 
+    /* Admin Controls */
     .admin-controls {
+      display: none;
+      background: #f2f2f2;
+      padding: 15px;
+      border-radius: 10px;
       margin-top: 20px;
-      background: #efefef;
-      padding: 10px;
-      border-radius: 8px;
-      display: none; /* hidden by default */
     }
 
     .admin-controls.active {
-      display: block; /* show only when logged in as admin */
+      display: block;
     }
 
-    #login-section {
+    .queue {
+      margin-top: 20px;
+      padding: 10px;
       background: #fff;
-      padding: 30px;
+      border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      max-width: 400px;
-      width: 100%;
+    }
+
+    .queue ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .queue li {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.9rem;
+    }
+
+    /* Inlogscherm voor Admin */
+    #login-section {
+      display: none;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 40px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
       text-align: center;
     }
 
     #login-section input {
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
       width: 100%;
+      font-size: 1rem;
+      border: 2px solid #ddd;
       border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 16px;
     }
 
     #login-section button {
-      padding: 12px;
-      margin-top: 10px;
-      background-color: #1d3557;
+      padding: 12px 15px;
+      background: #1d3557;
       color: white;
       border: none;
       border-radius: 8px;
@@ -118,137 +145,100 @@
     }
 
     #login-section button:hover {
-      background-color: #457b9d;
+      background: #457b9d;
     }
-
-    .queue {
-      margin-top: 20px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
-    }
-
-    .queue ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    .queue li {
-      padding: 10px;
-      background-color: #fafafa;
-      margin-bottom: 10px;
-      border-radius: 5px;
-    }
-
   </style>
 </head>
 <body>
 
-<!-- Login Section for Admin -->
-<div id="login-section">
-  <h1>Inloggen als Admin</h1>
-  <input type="text" id="username" placeholder="Gebruikersnaam" />
-  <input type="password" id="password" placeholder="Wachtwoord" />
-  <button onclick="login()">Inloggen</button>
-</div>
+  <!-- Inlogscherm voor Admin -->
+  <div id="login-section">
+    <h2>Inloggen als Admin</h2>
+    <input type="text" id="username" placeholder="Gebruikersnaam">
+    <input type="password" id="password" placeholder="Wachtwoord">
+    <button onclick="login()">Inloggen</button>
+  </div>
 
-<!-- Chat Section -->
-<div id="chat-section">
+  <!-- Chat sectie -->
   <div class="chat-container">
-    <h2>Livechat</h2>
+    <h1>Livechat met Priester</h1>
     <div id="chat-box" class="chat-box">
-      <!-- Berichten komen hier -->
+      <!-- Berichten verschijnen hier -->
     </div>
     <div class="input-container">
-      <input type="text" id="message" placeholder="Typ je bericht..." />
+      <input type="text" id="message" placeholder="Typ je bericht...">
       <button onclick="sendMessage()">Verstuur</button>
     </div>
   </div>
-</div>
 
-<!-- Admin Controls -->
-<div id="admin-controls" class="admin-controls">
-  <h3>Admin Controls</h3>
-  <button onclick="kickUser()">Kick Gebruiker</button>
-  <button onclick="viewQueue()">Bekijk Wachtrij</button>
-</div>
+  <!-- Admin controls (Wachtrij) -->
+  <div class="admin-controls" id="admin-controls">
+    <h2>Admin Wachtrij</h2>
+    <div class="queue" id="queue">
+      <h3>Wachtrij:</h3>
+      <ul id="queue-list">
+        <!-- Wachtrij items verschijnen hier -->
+      </ul>
+    </div>
+    <button onclick="kickUser()">Kick Gebruiker</button>
+  </div>
 
-<!-- Queue -->
-<div id="queue" class="queue">
-  <h3>Wachtrij</h3>
-  <ul id="queue-list">
-    <!-- Wachtrij van gebruikers komt hier -->
-  </ul>
-</div>
+  <script>
+    // Simulatie van admin login
+    const validAdmin = { username: "admin", password: "admin" };
+    let isAdmin = false;
+    let queue = [];
 
-<script>
-  const validAdmin = { username: "admin", password: "admin" };
-  let isAdmin = false;
-  let queue = [];
+    // Functie om in te loggen als admin
+    function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
 
-  // Functie voor login
-  function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-
-    if (username === validAdmin.username && password === validAdmin.password) {
-      isAdmin = true;
-      showAdminControls();
-      document.getElementById("login-section").style.display = "none";
-    } else {
-      alert("Foute inloggegevens.");
+      if (username === validAdmin.username && password === validAdmin.password) {
+        isAdmin = true;
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("admin-controls").classList.add("active");
+      } else {
+        alert("Onjuiste inloggegevens.");
+      }
     }
-  }
 
-  // Admin Controls zichtbaar maken
-  function showAdminControls() {
-    document.getElementById("admin-controls").classList.add("active");
-  }
+    // Chatberichten verzenden
+    function sendMessage() {
+      const message = document.getElementById("message").value;
+      if (message) {
+        const chatBox = document.getElementById("chat-box");
+        const newMessage = document.createElement("div");
+        newMessage.textContent = `Jij: ${message}`;
+        chatBox.appendChild(newMessage);
+        document.getElementById("message").value = "";
 
-  // Functie voor het versturen van berichten
-  function sendMessage() {
-    const message = document.getElementById("message").value;
-    if (message) {
-      const chatBox = document.getElementById("chat-box");
-      const userMessage = document.createElement("div");
-      userMessage.textContent = "Jij: " + message;
-      chatBox.appendChild(userMessage);
-      document.getElementById("message").value = "";
+        // Simuleer IP en stad
+        const userIP = "192.168.1.1";  // Dummy IP
+        const city = "Amsterdam";  // Simuleer stad
 
-      // Voeg gebruiker toe aan wachtrij
-      const userIP = "192.168.0.1"; // Dummy IP (je zou hier een echte IP kunnen gebruiken)
-      const city = "Amsterdam"; // Simuleer stad
-      queue.push({ ip: userIP, city: city, message: message });
-      updateQueue();
+        queue.push({ ip: userIP, city: city, message: message });
+        updateQueue();
+      }
     }
-  }
 
-  // Update wachtrij met IP-adressen en stad
-  function updateQueue() {
-    const queueList = document.getElementById("queue-list");
-    queueList.innerHTML = ""; // Maak de wachtrij leeg
+    // Update de wachtrij weergave
+    function updateQueue() {
+      const queueList = document.getElementById("queue-list");
+      queueList.innerHTML = "";
+      queue.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = `${item.ip} (${item.city}) - ${item.message}`;
+        queueList.appendChild(li);
+      });
+    }
 
-    queue.forEach((item, index) => {
-      const listItem = document.createElement("li");
-      listItem.textContent = `IP: ${item.ip} (${item.city}) - Bericht: ${item.message}`;
-      queueList.appendChild(listItem);
-    });
-  }
-
-  // Functie om een gebruiker te kicken (Nog niet geïmplementeerd)
-  function kickUser() {
-    alert("Gebruiker gekicked!");
-  }
-
-  // Functie om de wachtrij te bekijken
-  function viewQueue() {
-    alert("Bekijk wachtrij (Zie lijst hieronder).");
-    updateQueue();  // Toont de wachtrij op de pagina
-  }
-</script>
+    // Kick een gebruiker uit de wachtrij
+    function kickUser() {
+      alert("Gebruiker is gekicked!");
+      // Dit kan verder worden geconfigureerd om een gebruiker daadwerkelijk te verwijderen
+    }
+  </script>
 
 </body>
 </html>
