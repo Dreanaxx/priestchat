@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Livechat met Priester</title>
   <style>
-    /* Algemeen stijlen voor de pagina */
+    /* Algemene stijlen */
     body {
       font-family: 'Arial', sans-serif;
       background: #f4f7f6;
@@ -26,6 +26,7 @@
       font-family: 'Georgia', serif;
     }
 
+    /* Chat container */
     .chat-container {
       background: #fff;
       width: 90%;
@@ -77,7 +78,7 @@
       background: #457b9d;
     }
 
-    /* Admin Controls */
+    /* Admin controls */
     .admin-controls {
       display: none;
       background: #f2f2f2;
@@ -110,7 +111,7 @@
       font-size: 0.9rem;
     }
 
-    /* Inlogscherm voor Admin */
+    /* Inlogscherm voor Priester */
     #login-section {
       display: none;
       position: absolute;
@@ -151,16 +152,17 @@
 </head>
 <body>
 
-  <!-- Inlogscherm voor Admin -->
+  <!-- Inlogscherm voor Priester -->
   <div id="login-section">
-    <h2>Inloggen als Admin</h2>
+    <h2>Inloggen als Priester</h2>
+    <p>Voer de inloggegevens in om toegang te krijgen tot de wachtrij en de chat als priester.</p>
     <input type="text" id="username" placeholder="Gebruikersnaam">
     <input type="password" id="password" placeholder="Wachtwoord">
     <button onclick="login()">Inloggen</button>
   </div>
 
-  <!-- Chat sectie -->
-  <div class="chat-container">
+  <!-- Chat sectie (zichtbaar voor alle gebruikers) -->
+  <div class="chat-container" id="chat-container">
     <h1>Livechat met Priester</h1>
     <div id="chat-box" class="chat-box">
       <!-- Berichten verschijnen hier -->
@@ -184,18 +186,19 @@
   </div>
 
   <script>
-    // Simulatie van admin login
-    const validAdmin = { username: "admin", password: "admin" };
+    // Beveiliging voor de priester login
+    const validAdmin = { username: "MP2025", password: "Priester" };
     let isAdmin = false;
     let queue = [];
 
-    // Functie om in te loggen als admin
+    // Functie om in te loggen als Priester
     function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
 
       if (username === validAdmin.username && password === validAdmin.password) {
         isAdmin = true;
+        localStorage.setItem("isAdmin", true); // Bewaren in localStorage voor sessie
         document.getElementById("login-section").style.display = "none";
         document.getElementById("admin-controls").classList.add("active");
       } else {
@@ -235,9 +238,21 @@
 
     // Kick een gebruiker uit de wachtrij
     function kickUser() {
-      alert("Gebruiker is gekicked!");
-      // Dit kan verder worden geconfigureerd om een gebruiker daadwerkelijk te verwijderen
+      if (queue.length > 0) {
+        queue.pop(); // Verwijder de laatste gebruiker
+        updateQueue();
+        alert("Gebruiker is gekicked!");
+      } else {
+        alert("Geen gebruikers in de wachtrij.");
+      }
     }
+
+    // Check of de admin al is ingelogd
+    window.onload = function() {
+      if (localStorage.getItem("isAdmin") === "true") {
+        document.getElementById("admin-controls").classList.add("active");
+      }
+    };
   </script>
 
 </body>
