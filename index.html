@@ -141,7 +141,7 @@
   <p id="error-message" style="color: red; display: none;">Inloggegevens zijn incorrect. Probeer het opnieuw.</p>
 </div>
 
-<!-- Chat sectie voor zowel gebruikers als admin -->
+<!-- Chat sectie voor gebruikers (zichtbaar voor iedereen) -->
 <div id="chat-section">
   <div id="chat-box"></div>
 
@@ -149,7 +149,7 @@
   <button id="send-button" onclick="sendMessage()">Verstuur</button>
 </div>
 
-<!-- Admin Controle sectie -->
+<!-- Admin Controle sectie (alleen voor admins) -->
 <div id="admin-controls">
   <h3>Wachtrij Berichten:</h3>
   <ul id="queue-list"></ul>
@@ -213,7 +213,7 @@
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  // Wachtrij ophalen en weergeven
+  // Wachtrij ophalen en weergeven (alleen zichtbaar voor admins)
   function loadQueue() {
     const queueList = document.getElementById('queue-list');
     const queue = JSON.parse(localStorage.getItem('queue'));
