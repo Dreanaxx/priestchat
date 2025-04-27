@@ -7,92 +7,146 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      background-color: #f7f7f7;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
       margin: 0;
+      padding: 0;
     }
+
     h1 {
       margin-top: 20px;
+      color: #333;
     }
+
     #chat-box {
       width: 80%;
-      max-width: 600px;
+      max-width: 800px;
       height: 400px;
       overflow-y: scroll;
-      border: 1px solid #ccc;
-      background-color: white;
+      border: 2px solid #ccc;
+      background-color: #fff;
       margin-bottom: 10px;
       padding: 10px;
       display: flex;
       flex-direction: column;
     }
-    #message-input {
-      width: 70%;
-      margin-bottom: 10px;
-    }
+
     .message {
       margin-bottom: 10px;
       padding: 10px;
       border: 1px solid #ddd;
       background-color: #f9f9f9;
+      border-radius: 5px;
     }
+
     .admin-message {
       background-color: #e0ffe0;
     }
+
+    #user-message-input {
+      width: 70%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #send-button {
+      padding: 8px 16px;
+      background-color: #5cb85c;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #send-button:hover {
+      background-color: #4cae4c;
+    }
+
     #login-section {
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+
     #chat-section {
-      display: block;
+      display: none;
+      width: 80%;
+      max-width: 800px;
     }
+
     #admin-controls {
       display: none;
       margin-top: 20px;
     }
+
     .admin-button {
       background-color: #d9534f;
       color: white;
-      padding: 5px 10px;
+      padding: 8px 12px;
       border: none;
       cursor: pointer;
-      margin-top: 5px;
+      border-radius: 5px;
+      margin-top: 10px;
     }
+
     .admin-button:hover {
       background-color: #c9302c;
     }
+
+    #queue-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #queue-list li {
+      background-color: #f9f9f9;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+
     .bold-text {
       font-weight: bold;
     }
+
+    /* Responsieve aanpassingen */
+    @media (max-width: 768px) {
+      #chat-box {
+        width: 95%;
+      }
+
+      #user-message-input {
+        width: 85%;
+      }
+    }
+
   </style>
 </head>
 <body>
 
 <h1>Livechat met Priester</h1>
 
-<!-- Chat sectie die zichtbaar is voor iedereen -->
-<div id="chat-section">
-  <div id="chat-box"></div>
-  
-  <!-- Voor normale gebruikers -->
-  <div>
-    <input type="text" id="user-message-input" placeholder="Typ hier je bericht..." />
-    <button onclick="sendMessage()">Verstuur</button>
-  </div>
-</div>
-
-<!-- Admin Login sectie (Optioneel) -->
+<!-- Admin Login sectie -->
 <div id="login-section">
   <input type="text" id="email" placeholder="E-mail" />
   <input type="password" id="password" placeholder="Wachtwoord" />
   <button onclick="login()">Inloggen als Admin</button>
   <p id="error-message" style="color: red; display: none;">Inloggegevens zijn incorrect. Probeer het opnieuw.</p>
+</div>
+
+<!-- Chat sectie voor zowel gebruikers als admin -->
+<div id="chat-section">
+  <div id="chat-box"></div>
+
+  <input type="text" id="user-message-input" placeholder="Typ hier je bericht..." onkeydown="checkEnter(event)" />
+  <button id="send-button" onclick="sendMessage()">Verstuur</button>
 </div>
 
 <!-- Admin Controle sectie -->
@@ -116,10 +170,10 @@
     localStorage.setItem('queue', JSON.stringify([]));
   }
 
-  // Functie voor berichten verzenden door iedereen
+  // Berichten verzenden door gebruikers
   function sendMessage() {
     const messageInput = document.getElementById('user-message-input');
-    const messageText = messageInput.value;
+    const messageText = messageInput.value.trim();
     
     if (messageText !== '') {
       const messages = JSON.parse(localStorage.getItem('messages'));
@@ -130,14 +184,14 @@
       const queue = JSON.parse(localStorage.getItem('queue'));
       queue.push('Chatter');
       localStorage.setItem('queue', JSON.stringify(queue));
-      
+
       messageInput.value = '';  // Leeg het berichtveld
       loadMessages();  // Update de chat
       loadQueue();     // Update de wachtrij
     }
   }
 
-  // Berichten ophalen en weergeven in de chat
+  // Automatisch berichten laden
   function loadMessages() {
     const chatBox = document.getElementById('chat-box');
     const messages = JSON.parse(localStorage.getItem('messages'));
@@ -154,6 +208,9 @@
       }
       chatBox.appendChild(messageDiv);
     });
+
+    // Scroll naar beneden zodat het laatste bericht zichtbaar is
+    chatBox.scrollTop = chatBox.scrollHeight;
   }
 
   // Wachtrij ophalen en weergeven
@@ -165,6 +222,8 @@
     queue.forEach((user, index) => {
       const li = document.createElement('li');
       li.textContent = `Gebruiker: ${user}`;
+      li.setAttribute('data-index', index); // Voeg een index toe om de juiste gebruiker te kunnen kiezen
+      li.onclick = function() { selectQueueUser(index); };
       queueList.appendChild(li);
     });
   }
@@ -172,16 +231,20 @@
   // Gebruiker uit de wachtrij verwijderen (kick)
   function kickUser() {
     const queue = JSON.parse(localStorage.getItem('queue'));
-    queue.shift();  // Verwijder de eerste gebruiker uit de wachtrij
-    localStorage.setItem('queue', JSON.stringify(queue));
-    loadQueue();  // Update de wachtrij
+    const selectedUserIndex = document.querySelector('.selected-user');
+    if (selectedUserIndex) {
+      queue.splice(selectedUserIndex.getAttribute('data-index'), 1);  // Verwijder de geselecteerde gebruiker uit de wachtrij
+      localStorage.setItem('queue', JSON.stringify(queue));
+      loadQueue();  // Update de wachtrij
+    }
   }
 
-  // Berichten beantwoorden door de admin
+  // Berichten beantwoorden door de admin (Priester)
   function answerUser() {
     const messages = JSON.parse(localStorage.getItem('messages'));
     const messageText = "Bericht beantwoord door Priester.";
 
+    // Simuleer een antwoord door Priester
     messages.push({ user: 'Priester', text: messageText });
     localStorage.setItem('messages', JSON.stringify(messages));
     
@@ -206,10 +269,27 @@
     }
   }
 
-  // Bijladen van berichten bij start
+  // Functie om Enter te detecteren voor berichten
+  function checkEnter(event) {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  }
+
+  // Gebruiker selecteren uit wachtrij
+  function selectQueueUser(index) {
+    const queueList = document.getElementById('queue-list');
+    const queueItems = queueList.getElementsByTagName('li');
+    for (let item of queueItems) {
+      item.classList.remove('selected-user');
+    }
+
+    queueItems[index].classList.add('selected-user');
+  }
+
+  // Initialisatie: Berichten en wachtrij laden
   loadMessages();
   loadQueue();
-
 </script>
 
 </body>
