@@ -38,7 +38,7 @@
       flex-direction: column;
       height: 70vh;
       position: relative;
-      display: none; /* Standaard niet zichtbaar */
+      display: none; /* Standaard niet zichtbaar voor iedereen */
     }
 
     .chat-box {
@@ -229,6 +229,7 @@
         localStorage.setItem("isAdmin", true); // Bewaren in localStorage voor sessie
         document.getElementById("login-section").style.display = "none";
         document.getElementById("admin-controls").classList.add("active");
+        document.getElementById("chat-container").style.display = "block"; // Chat zichtbaar voor admin
       } else {
         alert("Onjuiste inloggegevens.");
       }
@@ -257,7 +258,7 @@
     function updateQueue() {
       const queueList = document.getElementById("queue-list");
       queueList.innerHTML = "";
-      queue.forEach((item, index) => {
+      queue.forEach((item) => {
         const li = document.createElement("li");
         li.textContent = `${item.ip} (${item.city}) - Bericht: ${item.message}`;
         li.onclick = function() {
@@ -292,7 +293,7 @@
         document.getElementById("chat-container").style.display = "none";
       }
     }
-  </script>
 
+  </script>
 </body>
 </html>
