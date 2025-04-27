@@ -44,6 +44,9 @@
       flex-direction: column;
       align-items: center;
     }
+    #chat-section {
+      display: none;
+    }
     #admin-controls {
       display: none;
       margin-top: 20px;
@@ -73,21 +76,26 @@
   <input type="text" id="email" placeholder="E-mail" />
   <input type="password" id="password" placeholder="Wachtwoord" />
   <button onclick="login()">Inloggen als Admin</button>
+  <p id="error-message" style="color: red; display: none;">Inloggegevens zijn incorrect. Probeer het opnieuw.</p>
 </div>
 
 <!-- Chat sectie die alleen zichtbaar is als de admin is ingelogd -->
-<div id="admin-controls">
+<div id="chat-section">
   <div id="chat-box"></div>
-
+  
+  <!-- Voor normale gebruikers -->
   <div>
-    <input type="text" id="message-input" placeholder="Typ hier je bericht..." />
+    <input type="text" id="user-message-input" placeholder="Typ hier je bericht..." />
     <button onclick="sendMessage()">Verstuur</button>
   </div>
+</div>
 
-  <div id="queue">
-    <h3>Wachtrij:</h3>
-    <ul id="queue-list"></ul>
-  </div>
+<!-- Admin Controle sectie -->
+<div id="admin-controls">
+  <h3>Wachtrij Berichten:</h3>
+  <ul id="queue-list"></ul>
+  <button class="admin-button" onclick="kickUser()">Kick geselecteerde gebruiker</button>
+  <button class="admin-button" onclick="answerUser()">Beantwoord bericht</button>
 </div>
 
 <script>
@@ -109,27 +117,36 @@
     const password = document.getElementById('password').value;
 
     if (email === adminCredentials.email && password === adminCredentials.password) {
+      // Admin is ingelogd
       document.getElementById('login-section').style.display = 'none';
+      document.getElementById('chat-section').style.display = 'block';
       document.getElementById('admin-controls').style.display = 'block';
       loadMessages();
       loadQueue();
     } else {
-      alert('Inloggegevens zijn incorrect.');
+      // Foute inloggegevens
+      document.getElementById('error-message').style.display = 'block';
     }
   }
 
   // Bericht verzenden en wachtrij bijwerken
   function sendMessage() {
-    const messageInput = document.getElementById('message-input');
+    const messageInput = document.getElementById('user-message-input');
     const messageText = messageInput.value;
     
     if (messageText !== '') {
       const messages = JSON.parse(localStorage.getItem('messages'));
-      messages.push({ user: 'Priester', text: messageText });
+      messages.push({ user: 'Chatter', text: messageText });
       localStorage.setItem('messages', JSON.stringify(messages));
+
+      // Voeg gebruiker toe aan wachtrij
+      const queue = JSON.parse(localStorage.getItem('queue'));
+      queue.push('Chatter');
+      localStorage.setItem('queue', JSON.stringify(queue));
       
       messageInput.value = '';  // Leeg het berichtveld
       loadMessages();  // Update de chat
+      loadQueue();     // Update de wachtrij
     }
   }
 
@@ -161,35 +178,29 @@
     queue.forEach((user, index) => {
       const li = document.createElement('li');
       li.textContent = `Gebruiker: ${user}`;
-      const kickButton = document.createElement('button');
-      kickButton.textContent = 'Kick';
-      kickButton.classList.add('admin-button');
-      kickButton.onclick = () => kickUser(index);
-
-      li.appendChild(kickButton);
       queueList.appendChild(li);
     });
   }
 
-  // Gebruiker uit de wachtrij verwijderen
-  function kickUser(index) {
+  // Gebruiker uit de wachtrij verwijderen (kick)
+  function kickUser() {
     const queue = JSON.parse(localStorage.getItem('queue'));
-    queue.splice(index, 1);
+    queue.shift();  // Verwijder de eerste gebruiker uit de wachtrij
     localStorage.setItem('queue', JSON.stringify(queue));
     loadQueue();  // Update de wachtrij
   }
 
-  // Simuleren van een wachtrij voor gebruikers die berichten verzenden
-  function addUserToQueue(user) {
-    const queue = JSON.parse(localStorage.getItem('queue'));
-    queue.push(user);
-    localStorage.setItem('queue', JSON.stringify(queue));
-    loadQueue();  // Update de wachtrij
+  // Berichten beantwoorden door de admin
+  function answerUser() {
+    const messages = JSON.parse(localStorage.getItem('messages'));
+    const messageText = "Bericht beantwoord door Priester.";
+
+    messages.push({ user: 'Priester', text: messageText });
+    localStorage.setItem('messages', JSON.stringify(messages));
+    
+    loadMessages();  // Update de chat
   }
 
-  // Simuleer een paar gebruikers
-  setTimeout(() => addUserToQueue('User1'), 2000);
-  setTimeout(() => addUserToQueue('User2'), 4000);
 </script>
 
 </body>
