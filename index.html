@@ -37,6 +37,7 @@
       display: flex;
       flex-direction: column;
       height: 70vh;
+      position: relative;
     }
 
     .chat-box {
@@ -113,17 +114,17 @@
 
     /* Inlogscherm voor Priester */
     #login-section {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
       background: #fff;
-      padding: 40px;
+      padding: 20px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       border-radius: 10px;
       width: 100%;
       max-width: 400px;
       text-align: center;
+      z-index: 1000;
     }
 
     #login-section input {
@@ -147,6 +148,30 @@
     #login-section button:hover {
       background: #457b9d;
     }
+
+    /* Extra chat sectie (de Priester opent en sluit de chat) */
+    .open-chat-btn {
+      margin: 20px;
+      padding: 10px 20px;
+      background: #1d3557;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .open-chat-btn:hover {
+      background: #457b9d;
+    }
+
+    .chat-status {
+      font-size: 1rem;
+      color: green;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -163,6 +188,7 @@
   <!-- Chat sectie (zichtbaar voor alle gebruikers) -->
   <div class="chat-container" id="chat-container">
     <h1>Livechat met Priester</h1>
+    <div class="chat-status" id="chat-status">Een priester heeft de chat geopend.</div>
     <div id="chat-box" class="chat-box">
       <!-- Berichten verschijnen hier -->
     </div>
@@ -245,6 +271,31 @@
         alert("Geen gebruikers in de wachtrij.");
       }
     }
+
+    // Functie om de chat te openen
+    function openChat() {
+      document.getElementById("chat-status").style.display = "block";
+      document.getElementById("chat-container").style.display = "block";
+    }
+
+    // Functie om de chat te sluiten
+    function closeChat() {
+      document.getElementById("chat-status").style.display = "none";
+      document.getElementById("chat-container").style.display = "none";
+    }
+
+    // Chat openen/sluiten knoppen
+    const openChatBtn = document.createElement("button");
+    openChatBtn.textContent = "Open Chat";
+    openChatBtn.classList.add("open-chat-btn");
+    openChatBtn.onclick = openChat;
+    document.body.appendChild(openChatBtn);
+
+    const closeChatBtn = document.createElement("button");
+    closeChatBtn.textContent = "Sluit Chat";
+    closeChatBtn.classList.add("open-chat-btn");
+    closeChatBtn.onclick = closeChat;
+    document.body.appendChild(closeChatBtn);
 
     // Check of de admin al is ingelogd
     window.onload = function() {
