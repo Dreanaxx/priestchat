@@ -121,11 +121,33 @@
       background-color: #457b9d;
     }
 
+    .queue {
+      margin-top: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .queue ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .queue li {
+      padding: 10px;
+      background-color: #fafafa;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
   </style>
 </head>
 <body>
 
-<!-- Login Section for Admin (Only shows when admin needs to log in) -->
+<!-- Login Section for Admin -->
 <div id="login-section">
   <h1>Inloggen als Admin</h1>
   <input type="text" id="username" placeholder="Gebruikersnaam" />
@@ -133,12 +155,12 @@
   <button onclick="login()">Inloggen</button>
 </div>
 
-<!-- Chat Section (Always visible for users) -->
+<!-- Chat Section -->
 <div id="chat-section">
   <div class="chat-container">
     <h2>Livechat</h2>
     <div id="chat-box" class="chat-box">
-      <!-- Berichten zullen hier verschijnen -->
+      <!-- Berichten komen hier -->
     </div>
     <div class="input-container">
       <input type="text" id="message" placeholder="Typ je bericht..." />
@@ -147,18 +169,27 @@
   </div>
 </div>
 
-<!-- Admin Controls Section -->
+<!-- Admin Controls -->
 <div id="admin-controls" class="admin-controls">
   <h3>Admin Controls</h3>
   <button onclick="kickUser()">Kick Gebruiker</button>
   <button onclick="viewQueue()">Bekijk Wachtrij</button>
 </div>
 
+<!-- Queue -->
+<div id="queue" class="queue">
+  <h3>Wachtrij</h3>
+  <ul id="queue-list">
+    <!-- Wachtrij van gebruikers komt hier -->
+  </ul>
+</div>
+
 <script>
   const validAdmin = { username: "admin", password: "admin" };
   let isAdmin = false;
+  let queue = [];
 
-  // Functie voor het inloggen van de admin
+  // Functie voor login
   function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -166,18 +197,18 @@
     if (username === validAdmin.username && password === validAdmin.password) {
       isAdmin = true;
       showAdminControls();
-      document.getElementById("login-section").style.display = "none"; // Login verdwijnt na inloggen
+      document.getElementById("login-section").style.display = "none";
     } else {
       alert("Foute inloggegevens.");
     }
   }
 
-  // Toon de admin controls na succesvolle login
+  // Admin Controls zichtbaar maken
   function showAdminControls() {
     document.getElementById("admin-controls").classList.add("active");
   }
 
-  // Functie om berichten te versturen
+  // Functie voor het versturen van berichten
   function sendMessage() {
     const message = document.getElementById("message").value;
     if (message) {
@@ -185,18 +216,37 @@
       const userMessage = document.createElement("div");
       userMessage.textContent = "Jij: " + message;
       chatBox.appendChild(userMessage);
-      document.getElementById("message").value = ""; // Clear input
+      document.getElementById("message").value = "";
+
+      // Voeg gebruiker toe aan wachtrij
+      const userIP = "192.168.0.1"; // Dummy IP (je zou hier een echte IP kunnen gebruiken)
+      const city = "Amsterdam"; // Simuleer stad
+      queue.push({ ip: userIP, city: city, message: message });
+      updateQueue();
     }
   }
 
-  // Functie om een gebruiker te kickeren (nog niet geïmplementeerd)
+  // Update wachtrij met IP-adressen en stad
+  function updateQueue() {
+    const queueList = document.getElementById("queue-list");
+    queueList.innerHTML = ""; // Maak de wachtrij leeg
+
+    queue.forEach((item, index) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = `IP: ${item.ip} (${item.city}) - Bericht: ${item.message}`;
+      queueList.appendChild(listItem);
+    });
+  }
+
+  // Functie om een gebruiker te kicken (Nog niet geïmplementeerd)
   function kickUser() {
     alert("Gebruiker gekicked!");
   }
 
-  // Functie om de wachtrij te bekijken (nog niet geïmplementeerd)
+  // Functie om de wachtrij te bekijken
   function viewQueue() {
-    alert("Bekijk wachtrij (Nog niet geïmplementeerd).");
+    alert("Bekijk wachtrij (Zie lijst hieronder).");
+    updateQueue();  // Toont de wachtrij op de pagina
   }
 </script>
 
