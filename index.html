@@ -38,7 +38,7 @@
       flex-direction: column;
       height: 70vh;
       position: relative;
-      display: none; /* Standaard niet zichtbaar voor iedereen */
+      display: block; /* Chat is altijd zichtbaar voor iedereen */
     }
 
     .chat-box {
@@ -268,32 +268,4 @@
       });
     }
 
-    // Open de chat met de volgende gebruiker
-    function openNextChat() {
-      if (queue.length > 0) {
-        const user = queue.shift();
-        startChat(user);
-        updateQueue();
-      }
-    }
-
-    // Start de chat met een geselecteerde gebruiker
-    function startChat(user) {
-      currentChat = user;
-      document.getElementById("chat-container").style.display = "block";
-      document.getElementById("chat-status").style.display = "block";
-      document.getElementById("chat-box").innerHTML = `<div>Welkom! Een priester heeft de chat geopend. Je kunt nu beginnen met typen.</div>`;
-    }
-
-    // Kick een gebruiker
-    function kickUser() {
-      if (currentChat) {
-        alert(`Gebruiker ${currentChat.ip} is gekicked!`);
-        currentChat = null;
-        document.getElementById("chat-container").style.display = "none";
-      }
-    }
-
-  </script>
-</body>
-</html>
+    // Open de chat met de volgende
