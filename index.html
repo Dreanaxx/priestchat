@@ -25,308 +25,141 @@
       margin-bottom: 20px;
     }
 
-    #login-section {
+    .chat-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      background: #fff;
-      padding: 30px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      max-width: 400px;
-      width: 100%;
     }
 
-    #login-section input {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      border-radius: 8px;
+    .chat-box {
       border: 1px solid #ddd;
-      font-size: 16px;
-    }
-
-    #login-section button {
-      padding: 12px;
-      margin-top: 10px;
-      background-color: #1d3557;
-      color: white;
-      border: none;
       border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    #login-section button:hover {
-      background-color: #457b9d;
-    }
-
-    #error-message {
-      color: #e63946;
-      margin-top: 10px;
-      font-size: 14px;
-      display: none;
-    }
-
-    #chat-section {
-      display: none;
-      width: 100%;
-      max-width: 800px;
-      background-color: #fff;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-
-    #chat-box {
-      height: 400px;
+      max-height: 300px;
       overflow-y: auto;
-      border-bottom: 2px solid #ddd;
-      margin-bottom: 20px;
-      padding-right: 10px;
-    }
-
-    .message {
-      background-color: #f9f9f9;
-      padding: 12px;
-      border-radius: 8px;
       margin-bottom: 10px;
-      max-width: 70%;
+      padding: 10px;
+      background-color: #fafafa;
     }
 
-    .admin-message {
-      background-color: #e0ffe0;
-      font-weight: bold;
+    .input-container {
+      display: flex;
+      justify-content: space-between;
     }
 
-    #user-message-input {
-      width: 75%;
-      padding: 12px;
+    .input-container input {
+      width: 80%;
+      padding: 10px;
       border-radius: 8px;
       border: 1px solid #ddd;
-      font-size: 16px;
-      margin-right: 10px;
     }
 
-    #send-button {
-      padding: 12px 20px;
+    .input-container button {
+      padding: 10px;
       background-color: #1d3557;
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 16px;
       cursor: pointer;
     }
 
-    #send-button:hover {
+    .input-container button:hover {
       background-color: #457b9d;
     }
 
-    #admin-controls {
+    .admin-controls {
       margin-top: 20px;
-      display: none;
-    }
-
-    .admin-button {
-      padding: 12px 20px;
-      background-color: #e63946;
-      color: white;
-      border: none;
+      background: #efefef;
+      padding: 10px;
       border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
+      display: none; /* hidden by default */
     }
 
-    .admin-button:hover {
-      background-color: #c9302c;
-    }
-
-    #queue-list {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    #queue-list li {
-      background-color: #f1f1f1;
-      padding: 12px;
-      border-radius: 8px;
-      margin: 5px 0;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    #queue-list li:hover {
-      background-color: #e0e0e0;
-    }
-
-    #queue-list li.selected-user {
-      background-color: #a8dadc;
-    }
-
-    /* Responsieve aanpassingen */
-    @media (max-width: 768px) {
-      #chat-box {
-        height: 300px;
-      }
-
-      #user-message-input {
-        width: 65%;
-      }
-
-      #send-button {
-        padding: 10px 15px;
-      }
-
-      #queue-list li {
-        font-size: 14px;
-      }
+    .admin-controls.active {
+      display: block; /* show only when logged in as admin */
     }
   </style>
 </head>
 <body>
 
+<!-- Login Section -->
 <div id="login-section">
   <h1>Inloggen als Admin</h1>
-  <input type="text" id="email" placeholder="E-mail" />
+  <input type="text" id="username" placeholder="Gebruikersnaam" />
   <input type="password" id="password" placeholder="Wachtwoord" />
   <button onclick="login()">Inloggen</button>
-  <p id="error-message">Inloggegevens zijn incorrect. Probeer het opnieuw.</p>
 </div>
 
-<div id="chat-section">
-  <h1>Livechat met Priester</h1>
-  <div id="chat-box"></div>
+<!-- Chat Section (Visible after login) -->
+<div id="chat-section" style="display:none;">
+  <div class="chat-container">
+    <h2>Livechat</h2>
+    <div id="chat-box" class="chat-box">
+      <!-- Berichten zullen hier verschijnen -->
+    </div>
+    <div class="input-container">
+      <input type="text" id="message" placeholder="Typ je bericht..." />
+      <button onclick="sendMessage()">Verstuur</button>
+    </div>
+  </div>
 
-  <input type="text" id="user-message-input" placeholder="Typ hier je bericht..." onkeydown="checkEnter(event)" />
-  <button id="send-button" onclick="sendMessage()">Verstuur</button>
-
-  <div id="admin-controls">
-    <h3>Wachtrij Berichten</h3>
-    <ul id="queue-list"></ul>
-    <button class="admin-button" onclick="kickUser()">Kick Gebruiker</button>
-    <button class="admin-button" onclick="answerUser()">Beantwoord Bericht</button>
+  <!-- Admin Controls (Visible only for admin) -->
+  <div id="admin-controls" class="admin-controls">
+    <h3>Admin Controls</h3>
+    <button onclick="kickUser()">Kick Gebruiker</button>
+    <button onclick="viewQueue()">Bekijk Wachtrij</button>
   </div>
 </div>
 
 <script>
-  const adminCredentials = { email: 'admin@example.com', password: 'admin' };
+  const validAdmin = { username: "admin", password: "admin" };
+  let isAdmin = false;
 
-  if (!localStorage.getItem('messages')) {
-    localStorage.setItem('messages', JSON.stringify([]));
+  function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (username === validAdmin.username && password === validAdmin.password) {
+      isAdmin = true;
+      showChat();
+    } else if (username !== "" && password !== "") {
+      showChat();  // Normal user gets access to chat
+    } else {
+      alert("Foute inloggegevens.");
+    }
   }
 
-  if (!localStorage.getItem('queue')) {
-    localStorage.setItem('queue', JSON.stringify([]));
+  function showChat() {
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("chat-section").style.display = "block";
+    
+    if (isAdmin) {
+      document.getElementById("admin-controls").classList.add("active");
+    }
   }
 
   function sendMessage() {
-    const messageInput = document.getElementById('user-message-input');
-    const messageText = messageInput.value.trim();
-
-    if (messageText !== '') {
-      const messages = JSON.parse(localStorage.getItem('messages'));
-      messages.push({ user: 'Chatter', text: messageText });
-      localStorage.setItem('messages', JSON.stringify(messages));
-
-      const queue = JSON.parse(localStorage.getItem('queue'));
-      queue.push('Chatter');
-      localStorage.setItem('queue', JSON.stringify(queue));
-
-      messageInput.value = '';
-      loadMessages();
-      loadQueue();
+    const message = document.getElementById("message").value;
+    if (message) {
+      const chatBox = document.getElementById("chat-box");
+      const userMessage = document.createElement("div");
+      userMessage.textContent = "Jij: " + message;
+      chatBox.appendChild(userMessage);
+      document.getElementById("message").value = ""; // Clear input
     }
-  }
-
-  function loadMessages() {
-    const chatBox = document.getElementById('chat-box');
-    const messages = JSON.parse(localStorage.getItem('messages'));
-    chatBox.innerHTML = '';
-
-    messages.forEach((message) => {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message');
-      if (message.user === 'Priester') {
-        messageDiv.classList.add('admin-message');
-      }
-      messageDiv.innerHTML = `<span>${message.user}:</span> ${message.text}`;
-      chatBox.appendChild(messageDiv);
-    });
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function loadQueue() {
-    const queueList = document.getElementById('queue-list');
-    const queue = JSON.parse(localStorage.getItem('queue'));
-    queueList.innerHTML = '';
-
-    queue.forEach((user, index) => {
-      const li = document.createElement('li');
-      li.textContent = `Gebruiker: ${user}`;
-      li.setAttribute('data-index', index);
-      li.onclick = function() { selectQueueUser(index); };
-      queueList.appendChild(li);
-    });
-  }
-
-  function selectQueueUser(index) {
-    const queueList = document.getElementById('queue-list');
-    const queueItems = queueList.getElementsByTagName('li');
-    for (let item of queueItems) {
-      item.classList.remove('selected-user');
-    }
-
-    queueItems[index].classList.add('selected-user');
   }
 
   function kickUser() {
-    const queue = JSON.parse(localStorage.getItem('queue'));
-    const selectedUserIndex = document.querySelector('.selected-user');
-    if (selectedUserIndex) {
-      queue.splice(selectedUserIndex.getAttribute('data-index'), 1);
-      localStorage.setItem('queue', JSON.stringify(queue));
-      loadQueue();
-    }
+    alert("Gebruiker gekicked!");
   }
 
-  function answerUser() {
-    const messages = JSON.parse(localStorage.getItem('messages'));
-    const messageText = "Bericht beantwoord door Priester.";
-
-    messages.push({ user: 'Priester', text: messageText });
-    localStorage.setItem('messages', JSON.stringify(messages));
-
-    loadMessages();
+  function viewQueue() {
+    alert("Bekijk wachtrij (Nog niet geïmplementeerd).");
   }
-
-  function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    if (email === adminCredentials.email && password === adminCredentials.password) {
-      document.getElementById('login-section').style.display = 'none';
-      document.getElementById('chat-section').style.display = 'block';
-      document.getElementById('admin-controls').style.display = 'block';
-      loadMessages();
-      loadQueue();
-    } else {
-      document.getElementById('error-message').style.display = 'block';
-      document.getElementById('login-section').style.display = 'block';
-      document.getElementById('chat-section').style.display = 'none';
-    }
-  }
-
-  function checkEnter(event) {
-    if (event.key === 'Enter') {
-      sendMessage();
-    }
-  }
-
-  loadMessages();
-  loadQueue();
 </script>
 
 </body>
