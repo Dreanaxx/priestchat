@@ -82,20 +82,47 @@
     .admin-controls.active {
       display: block; /* show only when logged in as admin */
     }
+
+    #login-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #fff;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    #login-section input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+    }
+
+    #login-section button {
+      padding: 12px;
+      margin-top: 10px;
+      background-color: #1d3557;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #login-section button:hover {
+      background-color: #457b9d;
+    }
   </style>
 </head>
 <body>
 
-<!-- Login Section -->
-<div id="login-section">
-  <h1>Inloggen als Admin</h1>
-  <input type="text" id="username" placeholder="Gebruikersnaam" />
-  <input type="password" id="password" placeholder="Wachtwoord" />
-  <button onclick="login()">Inloggen</button>
-</div>
-
-<!-- Chat Section (Visible after login) -->
-<div id="chat-section" style="display:none;">
+<!-- Chat Section (Always visible for normal users) -->
+<div id="chat-section">
   <div class="chat-container">
     <h2>Livechat</h2>
     <div id="chat-box" class="chat-box">
@@ -106,13 +133,21 @@
       <button onclick="sendMessage()">Verstuur</button>
     </div>
   </div>
+</div>
 
-  <!-- Admin Controls (Visible only for admin) -->
-  <div id="admin-controls" class="admin-controls">
-    <h3>Admin Controls</h3>
-    <button onclick="kickUser()">Kick Gebruiker</button>
-    <button onclick="viewQueue()">Bekijk Wachtrij</button>
-  </div>
+<!-- Login Section for Admin (Only shows when admin needs to log in) -->
+<div id="login-section" style="display:none;">
+  <h1>Inloggen als Admin</h1>
+  <input type="text" id="username" placeholder="Gebruikersnaam" />
+  <input type="password" id="password" placeholder="Wachtwoord" />
+  <button onclick="login()">Inloggen</button>
+</div>
+
+<!-- Admin Controls Section -->
+<div id="admin-controls" class="admin-controls">
+  <h3>Admin Controls</h3>
+  <button onclick="kickUser()">Kick Gebruiker</button>
+  <button onclick="viewQueue()">Bekijk Wachtrij</button>
 </div>
 
 <script>
@@ -125,21 +160,15 @@
 
     if (username === validAdmin.username && password === validAdmin.password) {
       isAdmin = true;
-      showChat();
-    } else if (username !== "" && password !== "") {
-      showChat();  // Normal user gets access to chat
+      showAdminControls();
     } else {
       alert("Foute inloggegevens.");
     }
   }
 
-  function showChat() {
+  function showAdminControls() {
     document.getElementById("login-section").style.display = "none";
-    document.getElementById("chat-section").style.display = "block";
-    
-    if (isAdmin) {
-      document.getElementById("admin-controls").classList.add("active");
-    }
+    document.getElementById("admin-controls").classList.add("active");
   }
 
   function sendMessage() {
