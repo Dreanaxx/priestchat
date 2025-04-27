@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Livechat met Priester</title>
   <style>
-    /* Algemene stijlen */
     body {
       font-family: 'Arial', sans-serif;
       background: #f4f7f6;
@@ -26,7 +25,6 @@
       font-family: 'Georgia', serif;
     }
 
-    /* Chat container */
     .chat-container {
       background: #fff;
       width: 90%;
@@ -79,7 +77,6 @@
       background: #457b9d;
     }
 
-    /* Admin controls */
     .admin-controls {
       display: none;
       background: #f2f2f2;
@@ -112,7 +109,6 @@
       font-size: 0.9rem;
     }
 
-    /* Inlogscherm voor Priester */
     #login-section {
       position: fixed;
       bottom: 10px;
@@ -149,7 +145,14 @@
       background: #457b9d;
     }
 
-    /* Extra chat sectie (de Priester opent en sluit de chat) */
+    .chat-status {
+      font-size: 1rem;
+      color: green;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+
     .open-chat-btn {
       margin: 20px;
       padding: 10px 20px;
@@ -164,28 +167,17 @@
     .open-chat-btn:hover {
       background: #457b9d;
     }
-
-    .chat-status {
-      font-size: 1rem;
-      color: green;
-      font-weight: bold;
-      text-align: center;
-      display: none;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Inlogscherm voor Priester -->
   <div id="login-section">
     <h2>Inloggen als Priester</h2>
-    <p>Voer de inloggegevens in om toegang te krijgen tot de wachtrij en de chat als priester.</p>
     <input type="text" id="username" placeholder="Gebruikersnaam">
     <input type="password" id="password" placeholder="Wachtwoord">
     <button onclick="login()">Inloggen</button>
   </div>
 
-  <!-- Chat sectie (zichtbaar voor alle gebruikers) -->
   <div class="chat-container" id="chat-container">
     <h1>Livechat met Priester</h1>
     <div class="chat-status" id="chat-status">Een priester heeft de chat geopend.</div>
@@ -198,7 +190,6 @@
     </div>
   </div>
 
-  <!-- Admin controls (Wachtrij) -->
   <div class="admin-controls" id="admin-controls">
     <h2>Admin Wachtrij</h2>
     <div class="queue" id="queue">
@@ -212,29 +203,26 @@
   </div>
 
   <script>
-    // Beveiliging voor de priester login
     const validAdmin = { username: "MP2025", password: "Priester" };
     let isAdmin = false;
     let queue = [];
     let currentChat = null;
 
-    // Functie om in te loggen als Priester
     function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
 
       if (username === validAdmin.username && password === validAdmin.password) {
         isAdmin = true;
-        localStorage.setItem("isAdmin", true); // Bewaren in localStorage voor sessie
+        localStorage.setItem("isAdmin", true);
         document.getElementById("login-section").style.display = "none";
         document.getElementById("admin-controls").classList.add("active");
-        document.getElementById("chat-container").style.display = "block"; // Chat zichtbaar voor admin
+        document.getElementById("chat-container").style.display = "block";
       } else {
         alert("Onjuiste inloggegevens.");
       }
     }
 
-    // Chatberichten verzenden
     function sendMessage() {
       const message = document.getElementById("message").value;
       if (message) {
@@ -244,20 +232,17 @@
         chatBox.appendChild(newMessage);
         document.getElementById("message").value = "";
 
-        // Simuleer IP en stad
-        const userIP = "192.168.1.1";  // Dummy IP
-        const city = "Amsterdam";  // Simuleer stad
-
+        const userIP = "192.168.1.1";
+        const city = "Amsterdam";
         queue.push({ ip: userIP, city: city, message: message });
         updateQueue();
       }
     }
 
-    // Update de wachtrij weergave
     function updateQueue() {
       const queueList = document.getElementById("queue-list");
       queueList.innerHTML = "";
-      queue.forEach((item) => {
+      queue.forEach((item, index) => {
         const li = document.createElement("li");
         li.textContent = `${item.ip} (${item.city}) - Bericht: ${item.message}`;
         li.onclick = function() {
@@ -267,7 +252,6 @@
       });
     }
 
-    // Open de chat met de volgende gebruiker
     function openNextChat() {
       if (queue.length > 0) {
         const user = queue.shift();
@@ -276,7 +260,6 @@
       }
     }
 
-    // Start de chat met een geselecteerde gebruiker
     function startChat(user) {
       currentChat = user;
       document.getElementById("chat-container").style.display = "block";
@@ -284,7 +267,6 @@
       document.getElementById("chat-box").innerHTML = `<div>Welkom! Een priester heeft de chat geopend. Je kunt nu beginnen met typen.</div>`;
     }
 
-    // Kick een gebruiker
     function kickUser() {
       if (currentChat) {
         alert(`Gebruiker ${currentChat.ip} is gekicked!`);
