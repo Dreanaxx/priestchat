@@ -18,6 +18,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      flex-direction: column;
     }
 
     h1 {
@@ -84,9 +85,6 @@
     }
 
     #login-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       background: #fff;
       padding: 30px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -97,6 +95,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      text-align: center;
     }
 
     #login-section input {
@@ -121,11 +120,20 @@
     #login-section button:hover {
       background-color: #457b9d;
     }
+
   </style>
 </head>
 <body>
 
-<!-- Chat Section (Always visible for normal users) -->
+<!-- Login Section for Admin (Only shows when admin needs to log in) -->
+<div id="login-section">
+  <h1>Inloggen als Admin</h1>
+  <input type="text" id="username" placeholder="Gebruikersnaam" />
+  <input type="password" id="password" placeholder="Wachtwoord" />
+  <button onclick="login()">Inloggen</button>
+</div>
+
+<!-- Chat Section (Always visible for users) -->
 <div id="chat-section">
   <div class="chat-container">
     <h2>Livechat</h2>
@@ -139,14 +147,6 @@
   </div>
 </div>
 
-<!-- Login Section for Admin (Only shows when admin needs to log in) -->
-<div id="login-section" style="display:none;">
-  <h1>Inloggen als Admin</h1>
-  <input type="text" id="username" placeholder="Gebruikersnaam" />
-  <input type="password" id="password" placeholder="Wachtwoord" />
-  <button onclick="login()">Inloggen</button>
-</div>
-
 <!-- Admin Controls Section -->
 <div id="admin-controls" class="admin-controls">
   <h3>Admin Controls</h3>
@@ -158,9 +158,6 @@
   const validAdmin = { username: "admin", password: "admin" };
   let isAdmin = false;
 
-  // Toon chat altijd voor gebruikers
-  document.getElementById("chat-section").style.display = "block";
-
   // Functie voor het inloggen van de admin
   function login() {
     const username = document.getElementById("username").value;
@@ -169,7 +166,7 @@
     if (username === validAdmin.username && password === validAdmin.password) {
       isAdmin = true;
       showAdminControls();
-      document.getElementById("login-section").style.display = "none";
+      document.getElementById("login-section").style.display = "none"; // Login verdwijnt na inloggen
     } else {
       alert("Foute inloggegevens.");
     }
