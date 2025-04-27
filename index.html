@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livechat met Priester</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #chat-box {
+      width: 80%;
+      max-width: 600px;
+      height: 400px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      background-color: white;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+    #message-input {
+      width: 70%;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+    .admin-message {
+      background-color: #e0ffe0;
+    }
+    #login-section {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #admin-controls {
+      display: none;
+      margin-top: 20px;
+    }
+    .admin-button {
+      background-color: #d9534f;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .admin-button:hover {
+      background-color: #c9302c;
+    }
+    .bold-text {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Livechat met Priester</h1>
+
+<!-- Login sectie voor admin -->
+<div id="login-section">
+  <input type="text" id="email" placeholder="E-mail" />
+  <input type="password" id="password" placeholder="Wachtwoord" />
+  <button onclick="login()">Inloggen als Admin</button>
+</div>
+
+<!-- Chat sectie die alleen zichtbaar is als de admin is ingelogd -->
+<div id="admin-controls">
+  <div id="chat-box"></div>
+
+  <div>
+    <input type="text" id="message-input" placeholder="Typ hier je bericht..." />
+    <button onclick="sendMessage()">Verstuur</button>
+  </div>
+
+  <div id="queue">
+    <h3>Wachtrij:</h3>
+    <ul id="queue-list"></ul>
+  </div>
+</div>
+
+<script>
+  // Admin inloggegevens
+  const adminCredentials = { email: 'admin@example.com', password: 'admin' };
+
+  // Chat berichten en wachtrij in localStorage
+  if (!localStorage.getItem('messages')) {
+    localStorage.setItem('messages', JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem('queue')) {
+    localStorage.setItem('queue', JSON.stringify([]));
+  }
+
+  // Functie voor admin login
+  function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    if (email === adminCredentials.email && password === adminCredentials.password) {
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('admin-controls').style.display = 'block';
+      loadMessages();
+      loadQueue();
+    } else {
+      alert('Inloggegevens zijn incorrect.');
+    }
+  }
+
+  // Bericht verzenden en wachtrij bijwerken
+  function sendMessage() {
+    const messageInput = document.getElementById('message-input');
+    const messageText = messageInput.value;
+    
+    if (messageText !== '') {
+      const messages = JSON.parse(localStorage.getItem('messages'));
+      messages.push({ user: 'Priester', text: messageText });
+      localStorage.setItem('messages', JSON.stringify(messages));
+      
+      messageInput.value = '';  // Leeg het berichtveld
+      loadMessages();  // Update de chat
+    }
+  }
+
+  // Berichten ophalen en weergeven in de chat
+  function loadMessages() {
+    const chatBox = document.getElementById('chat-box');
+    const messages = JSON.parse(localStorage.getItem('messages'));
+    chatBox.innerHTML = '';
+
+    messages.forEach((message) => {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      if (message.user === 'Priester') {
+        messageDiv.classList.add('admin-message');
+        messageDiv.innerHTML = `<span class="bold-text">${message.user}:</span> ${message.text}`;
+      } else {
+        messageDiv.innerHTML = `<span class="bold-text">${message.user}:</span> ${message.text}`;
+      }
+      chatBox.appendChild(messageDiv);
+    });
+  }
+
+  // Wachtrij ophalen en weergeven
+  function loadQueue() {
+    const queueList = document.getElementById('queue-list');
+    const queue = JSON.parse(localStorage.getItem('queue'));
+    queueList.innerHTML = '';
+
+    queue.forEach((user, index) => {
+      const li = document.createElement('li');
+      li.textContent = `Gebruiker: ${user}`;
+      const kickButton = document.createElement('button');
+      kickButton.textContent = 'Kick';
+      kickButton.classList.add('admin-button');
+      kickButton.onclick = () => kickUser(index);
+
+      li.appendChild(kickButton);
+      queueList.appendChild(li);
+    });
+  }
+
+  // Gebruiker uit de wachtrij verwijderen
+  function kickUser(index) {
+    const queue = JSON.parse(localStorage.getItem('queue'));
+    queue.splice(index, 1);
+    localStorage.setItem('queue', JSON.stringify(queue));
+    loadQueue();  // Update de wachtrij
+  }
+
+  // Simuleren van een wachtrij voor gebruikers die berichten verzenden
+  function addUserToQueue(user) {
+    const queue = JSON.parse(localStorage.getItem('queue'));
+    queue.push(user);
+    localStorage.setItem('queue', JSON.stringify(queue));
+    loadQueue();  // Update de wachtrij
+  }
+
+  // Simuleer een paar gebruikers
+  setTimeout(() => addUserToQueue('User1'), 2000);
+  setTimeout(() => addUserToQueue('User2'), 4000);
+</script>
+
+</body>
+</html>
